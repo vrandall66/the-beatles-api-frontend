@@ -17,3 +17,21 @@ export const getAllSongs = async () => {
   const data = await response.json();
   return data;
 };
+
+export const getAlbum = async id => {
+  const response = await fetch(`${baseUrl}albums/${id}`);
+  if (!response.ok) {
+    throw new Error('Could not retrieve album, please try again later.');
+  }
+  const data = await response.json();
+  return data;
+};
+
+export const getSong = async id => {
+  const response = await fetch(`${baseUrl}songs/${id}`);
+  if(!response.ok) {
+    throw new Error('Could not retrieve album, please try again later.');
+  }
+  const data = await response.json();
+  return data;
+}

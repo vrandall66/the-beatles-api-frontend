@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import ReactJson from 'react-json-view';
-import { getAllAlbums, getAllSongs } from './apiCalls/apiCalls';
+import {
+  getAllAlbums,
+  getAllSongs,
+  getAlbum,
+  getSong
+} from './apiCalls/apiCalls';
 import './App.css';
 
 class App extends Component {
@@ -14,9 +19,15 @@ class App extends Component {
       postedAlbum: {},
       postedSong: {},
       deletedAlbum: '',
-      deletedSong: ''
+      deletedSong: '',
+      albumId: '',
+      songId: ''
     };
   }
+
+  handleChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
 
   getAlbums = async () => {
     let albums = await getAllAlbums();
@@ -28,12 +39,32 @@ class App extends Component {
     this.setState({ songs });
   };
 
+  getAlbum = async id => {
+    let album = await getAlbum(id);
+    this.setState({ album });
+  };
+
+  getSong = async id => {
+    let song = await getSong(id);
+    this.setState({ song });
+  };
+
   clearAlbums = () => {
     this.setState({ albums: [] });
   };
 
   clearSongs = () => {
     this.setState({ songs: [] });
+  };
+
+  clearAlbum = () => {
+    this.setState({ album: {} });
+    this.setState({ albumId: '' });
+  };
+
+  clearSong = () => {
+    this.setState({ song: {} });
+    this.setState({ songId: '' });
   };
 
   render() {
@@ -66,8 +97,26 @@ class App extends Component {
             GET: <code>api/v1/albums/:id</code>
           </h2>
           <div className='App__div--endpoints'>
-            <button className='App__button--submit-to-endpoint'>GET</button>
-            <button className='App__button--reset-request'>RESET</button>
+            <input
+              className='App__input--album-id'
+              placeholder=':id'
+              name='albumId'
+              maxLength='10'
+              value={this.state.albumId}
+              onChange={this.handleChange}
+            />
+            <button
+              className='App__button--submit-to-endpoint'
+              onClick={() => this.getAlbum(this.state.albumId)}
+            >
+              GET
+            </button>
+            <button
+              className='App__button--reset-request'
+              onClick={this.clearAlbum}
+            >
+              RESET
+            </button>
             <ReactJson src={this.state.album} theme='hopscotch' />
           </div>
         </div>
@@ -96,8 +145,26 @@ class App extends Component {
             GET: <code>api/v1/songs/:id</code>
           </h2>
           <div className='App__div--endpoints'>
-            <button className='App__button--submit-to-endpoint'>GET</button>
-            <button className='App__button--reset-request'>RESET</button>
+            <input
+              className='App__input--song-id'
+              placeholder=':id'
+              name='songId'
+              maxLength='10'
+              value={this.state.songId}
+              onChange={this.handleChange}
+            />
+            <button
+              className='App__button--submit-to-endpoint'
+              onClick={() => this.getSong(this.state.songId)}
+            >
+              GET
+            </button>
+            <button
+              className='App__button--reset-request'
+              onClick={this.clearSong}
+            >
+              RESET
+            </button>
             <ReactJson src={this.state.song} theme='hopscotch' />
           </div>
         </div>
