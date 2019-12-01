@@ -4,7 +4,9 @@ import {
   getAllAlbums,
   getAllSongs,
   getAlbum,
-  getSong
+  getSong,
+  postNewAlbum,
+  postNewSong
 } from './apiCalls/apiCalls';
 import './App.css';
 
@@ -14,14 +16,22 @@ class App extends Component {
     this.state = {
       albums: [],
       songs: [],
-      album: {},
-      song: {},
+      currentAlbum: {},
+      currentSong: {},
       postedAlbum: {},
       postedSong: {},
       deletedAlbum: '',
       deletedSong: '',
       albumId: '',
-      songId: ''
+      trackId: '',
+      albumName: '',
+      trackName: '',
+      genre: '',
+      releaseDate: '',
+      trackCount: '',
+      trackNumber: '',
+      discNumber: '',
+      trackTimeMillis: ''
     };
   }
 
@@ -40,16 +50,46 @@ class App extends Component {
   };
 
   getAlbum = async id => {
-    let album = await getAlbum(id);
-    this.setState({ album });
+    let currentAlbum = await getAlbum(id);
+    this.setState({ currentAlbum });
   };
 
   getSong = async id => {
-    let song = await getSong(id);
-    this.setState({ song });
+    let currentSong = await getSong(id);
+    this.setState({ currentSong });
   };
 
-  clearAlbums = () => {
+  makeNewAlbum = async () => {
+    const { albumName, genre, releaseDate, trackCount } = this.state;
+    const newAlbum = { albumName, genre, releaseDate, trackCount };
+    const postedAlbum = await postNewAlbum(newAlbum);
+    this.setState({ postedAlbum });
+  };
+
+  makeNewSong = async () => {
+    const {
+      trackName,
+      trackNumber,
+      trackId,
+      trackTimeMillis,
+      discNumber,
+      albumName,
+      album
+    } = this.state;
+    const newSong = {
+      trackName,
+      trackNumber,
+      trackId,
+      trackTimeMillis,
+      discNumber,
+      albumName,
+      album
+    };
+    const postedSong = await postNewSong(newSong);
+    this.setState({ postedSong });
+  };
+
+  clearAlbumsGet = () => {
     this.setState({ albums: [] });
   };
 
@@ -57,14 +97,36 @@ class App extends Component {
     this.setState({ songs: [] });
   };
 
-  clearAlbum = () => {
-    this.setState({ album: {} });
+  clearAlbumGet = () => {
+    this.setState({ currentAlbum: {} });
     this.setState({ albumId: '' });
   };
 
-  clearSong = () => {
-    this.setState({ song: {} });
+  clearSongGet = () => {
+    this.setState({ currentSong: {} });
     this.setState({ songId: '' });
+  };
+
+  clearAlbumPost = () => {
+    this.setState({
+      postedAlbum: {},
+      albumName: '',
+      genre: '',
+      releaseDate: '',
+      trackCount: ''
+    });
+  };
+
+  clearSongPost = () => {
+    this.setState({
+      postedSong: {},
+      albumName: '',
+      discNumber: '',
+      trackId: '',
+      trackName: '',
+      trackTimeMillis: '',
+      albumId: ''
+    });
   };
 
   render() {
@@ -85,7 +147,7 @@ class App extends Component {
             </button>
             <button
               className='App__button--reset-request'
-              onClick={this.clearAlbums}
+              onClick={this.clearAlbumsGet}
             >
               RESET
             </button>
@@ -113,11 +175,11 @@ class App extends Component {
             </button>
             <button
               className='App__button--reset-request'
-              onClick={this.clearAlbum}
+              onClick={this.clearAlbumGet}
             >
               RESET
             </button>
-            <ReactJson src={this.state.album} theme='hopscotch' />
+            <ReactJson src={this.state.currentAlbum} theme='hopscotch' />
           </div>
         </div>
         <div className='App__div--container'>
@@ -161,11 +223,11 @@ class App extends Component {
             </button>
             <button
               className='App__button--reset-request'
-              onClick={this.clearSong}
+              onClick={this.clearSongGet}
             >
               RESET
             </button>
-            <ReactJson src={this.state.song} theme='hopscotch' />
+            <ReactJson src={this.state.currentSong} theme='hopscotch' />
           </div>
         </div>
         <div className='App__div--container'>
@@ -173,8 +235,59 @@ class App extends Component {
             POST: <code>api/v1/albums/:id</code>
           </h2>
           <div className='App__div--endpoints'>
-            <button className='App__button--submit-to-endpoint'>POST</button>
-            <button className='App__button--reset-request'>RESET</button>
+            <div className='App__div--POST-albums-options'>
+              <input
+                className='App__input--POST-album-query'
+                placeholder='Album Name'
+                name='albumName'
+                value={this.state.albumName}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-album-query'
+                placeholder='Album Id'
+                name='albumId'
+                maxLength='20'
+                value={this.state.albumId}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-album-query'
+                placeholder='Genre'
+                name='genre'
+                value={this.state.genre}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-album-query'
+                placeholder='Release Date'
+                name='releaseDate'
+                maxLength='40'
+                value={this.state.releaseDate}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-album-query'
+                placeholder='Track Count'
+                name='trackCount'
+                maxLength='3'
+                value={this.state.trackCount}
+                onChange={this.handleChange}
+              />
+            </div>
+
+            <button
+              className='App__button--submit-to-endpoint'
+              onClick={this.makeNewAlbum}
+            >
+              POST
+            </button>
+            <button
+              className='App__button--reset-request'
+              onClick={this.clearAlbumPost}
+            >
+              RESET
+            </button>
             <ReactJson src={this.state.postedAlbum} theme='hopscotch' />
           </div>
         </div>
@@ -183,8 +296,76 @@ class App extends Component {
             POST: <code>api/v1/songs/:id</code>
           </h2>
           <div className='App__div--endpoints'>
-            <button className='App__button--submit-to-endpoint'>POST</button>
-            <button className='App__button--reset-request'>RESET</button>
+            <div className='App__div--POST-songs-options'>
+              <input
+                className='App__input--POST-song-query'
+                placeholder='Track Name'
+                name='trackName'
+                maxLength='50'
+                value={this.state.trackName}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-song-query'
+                placeholder='Track Number'
+                name='trackNumber'
+                maxLength='3'
+                value={this.state.trackNumber}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-song-query'
+                placeholder='Track ID'
+                name='trackId'
+                maxLength='20'
+                value={this.state.trackId}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-song-query'
+                placeholder='Track Time Milliseconds'
+                name='trackTimeMillis'
+                maxLength='100'
+                value={this.state.trackTimeMillis}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-song-query'
+                placeholder='Disc Number'
+                name='discNumber'
+                maxLength='2'
+                value={this.state.discNumber}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-song-query'
+                placeholder='Album Name'
+                name='albumName'
+                maxLength='100'
+                value={this.state.albumName}
+                onChange={this.handleChange}
+              />
+              <input
+                className='App__input--POST-song-query'
+                placeholder='Album Id'
+                name='albumId'
+                maxLength='20'
+                value={this.state.albumId}
+                onChange={this.handleChange}
+              />
+            </div>
+            <button
+              className='App__button--submit-to-endpoint'
+              onClick={this.makeNewSong}
+            >
+              POST
+            </button>
+            <button
+              className='App__button--reset-request'
+              onClick={this.clearSongPost}
+            >
+              RESET
+            </button>
             <ReactJson src={this.state.postedSong} theme='hopscotch' />
           </div>
         </div>

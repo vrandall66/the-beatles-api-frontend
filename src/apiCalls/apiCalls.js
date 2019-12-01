@@ -29,9 +29,35 @@ export const getAlbum = async id => {
 
 export const getSong = async id => {
   const response = await fetch(`${baseUrl}songs/${id}`);
-  if(!response.ok) {
+  if (!response.ok) {
     throw new Error('Could not retrieve album, please try again later.');
   }
   const data = await response.json();
   return data;
-}
+};
+
+export const postNewAlbum = async album => {
+  const options = {
+    method: 'POST',
+    body: JSON.stringify(album),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  const res = await fetch(`${baseUrl}albums/`, options);
+  const data = await res.json();
+  return data;
+};
+
+export const postNewSong = async song => {
+  const options = {
+    method: 'POST',
+    body: JSON.stringify(song),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  const res = await fetch(`${baseUrl}songs/`, options);
+  const data = await res.json();
+  return data;
+};
