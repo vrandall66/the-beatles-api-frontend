@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactJson from 'react-json-view';
-import { getAllAlbums } from './apiCalls/apiCalls';
+import { getAllAlbums, getAllSongs } from './apiCalls/apiCalls';
 import './App.css';
 
 class App extends Component {
@@ -23,8 +23,17 @@ class App extends Component {
     this.setState({ albums });
   };
 
+  getSongs = async () => {
+    let songs = await getAllSongs();
+    this.setState({ songs });
+  };
+
   clearAlbums = () => {
-    this.setState({ albums: {} });
+    this.setState({ albums: [] });
+  };
+
+  clearSongs = () => {
+    this.setState({ songs: [] });
   };
 
   render() {
@@ -67,8 +76,18 @@ class App extends Component {
             GET: <code>api/v1/songs</code>
           </h2>
           <div className='App__div--endpoints'>
-            <button className='App__button--submit-to-endpoint'>GET</button>
-            <button className='App__button--reset-request'>RESET</button>
+            <button
+              className='App__button--submit-to-endpoint'
+              onClick={this.getSongs}
+            >
+              GET
+            </button>
+            <button
+              className='App__button--reset-request'
+              onClick={this.clearSongs}
+            >
+              RESET
+            </button>
             <ReactJson src={this.state.songs} theme='hopscotch' />
           </div>
         </div>
