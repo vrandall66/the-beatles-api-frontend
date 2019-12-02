@@ -61,3 +61,18 @@ export const postNewSong = async song => {
   const data = await res.json();
   return data;
 };
+
+export const deleteAlbum = async id => {
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  const res = await fetch(
+    `${baseUrl}/albums/${id}`,
+    options
+  );
+  const data = res.json();
+  return data;
+};

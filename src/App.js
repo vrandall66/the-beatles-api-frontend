@@ -6,7 +6,8 @@ import {
   getAlbum,
   getSong,
   postNewAlbum,
-  postNewSong
+  postNewSong,
+  deleteAlbum
 } from './apiCalls/apiCalls';
 import './App.css';
 
@@ -20,8 +21,10 @@ class App extends Component {
       currentSong: {},
       postedAlbum: {},
       postedSong: {},
-      deletedAlbum: '',
-      deletedSong: '',
+      deletedAlbumResponse: '',
+      deletedSongResponse: '',
+      deletedAlbumId: '',
+      deletedSongId: '',
       albumId: '',
       trackId: '',
       albumName: '',
@@ -89,6 +92,14 @@ class App extends Component {
     this.setState({ postedSong });
   };
 
+  removeAlbum = async () => {
+    const id = this.state.deletedAlbum;
+    const res = await deleteAlbum(id);
+    const deletedAlbumResponse = { response: res };
+
+    this.setState({ deletedAlbumResponse });
+  };
+
   clearAlbumsGet = () => {
     this.setState({ albums: [] });
   };
@@ -127,6 +138,10 @@ class App extends Component {
       trackTimeMillis: '',
       albumId: ''
     });
+  };
+
+  clearDeleteAlbumId = () => {
+    this.setState({ deletedAlbumId: '' });
   };
 
   render() {
@@ -348,9 +363,9 @@ class App extends Component {
               <input
                 className='App__input--POST-song-query'
                 placeholder='Album Id'
-                name='albumId'
+                name='deletedAlbumId'
                 maxLength='20'
-                value={this.state.albumId}
+                value={this.state.deletedAlbumId}
                 onChange={this.handleChange}
               />
             </div>
@@ -374,7 +389,20 @@ class App extends Component {
             DELETE: <code>api/v1/songs/:id</code>
           </h2>
           <div className='App__div--endpoints'>
-            <button className='App__button--submit-to-endpoint'>DELETE</button>
+            <input
+              className='App__input--album-id'
+              placeholder=':id'
+              name='deletedAlbumId'
+              maxLength='10'
+              value={this.state.deletedAlbumId}
+              onChange={this.handleChange}
+            />
+            <button
+              className='App__button--submit-to-endpoint'
+              onClick={this.removeAlbum}
+            >
+              DELETE
+            </button>
             <button className='App__button--reset-request'>RESET</button>
           </div>
         </div>
